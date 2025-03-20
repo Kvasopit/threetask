@@ -10,9 +10,22 @@ new Vue({
         </button>
 
         <div class="columns">
-          <div class="column" v-for="(column, colIndex) in columns" :key="colIndex">
+          <div
+              class="column"
+              v-for="(column, colIndex) in columns"
+              :key="colIndex"
+              @dragover="onDragOver($event, colIndex)"
+              @drop="onDrop(colIndex, $event)"
+          >
             <h2>{{ columnTitles[colIndex] }}</h2>
-            <div v-for="(card, index) in column" :key="index" class="card" @dblclick="openModal(card, colIndex, index)">
+            <div
+                v-for="(card, index) in column"
+                :key="index"
+                class="card"
+                @dblclick="openModal(card, colIndex, index)"
+                @dragstart="onDragStart(colIndex, index, $event)"
+                :draggable="colIndex === 0 || colIndex === 1"
+            >
               <h3>{{ card.title || 'Без названия' }}</h3>
               <p>{{ card.description || 'Нет описания' }}</p>
               <p><strong>Дедлайн:</strong> {{ card.deadline || 'Не установлен' }}</p>
@@ -22,7 +35,6 @@ new Vue({
           </div>
         </div>
 
-        <!-- Модальное окно редактирования карточки -->
         <div v-if="isModalOpen" class="modal-overlay">
           <div class="modal-content">
             <h2>Редактировать карточку</h2>
@@ -42,15 +54,14 @@ new Vue({
       </div>
     `,
     data: {
-        columns: [[], [], [], []], // 4 столбца
+        columns: [[], [], [], []],
         columnTitles: ["Запланированные задачи", "В работе", "Тестирование", "Выполненные задачи"],
         isModalOpen: false,
         currentEditingCard: null,
         currentColumnIndex: null,
-        currentCardIndex: null
-    },
-    computed: {
-
+        currentCardIndex: null,
+        draggedCard: null,
+        draggedColumnIndex: null,
     },
     methods: {
         addCard() {
@@ -59,15 +70,14 @@ new Vue({
                 description: "",
                 deadline: null,
                 createdAt: new Date().toLocaleString(),
-                updatedAt: null, // Поле последнего изменения
+                updatedAt: null,
             };
             this.columns[0].push(newCard);
             this.openModal(newCard, 0, this.columns[0].length - 1);
-
         },
 
         openModal(card, columnIndex, cardIndex) {
-            this.currentEditingCard = { ...card }; // Создаем копию объекта для редактирования
+            this.currentEditingCard = { ...card };
             this.currentColumnIndex = columnIndex;
             this.currentCardIndex = cardIndex;
             this.isModalOpen = true;
@@ -75,7 +85,7 @@ new Vue({
 
         saveCard() {
             if (this.currentEditingCard && this.currentColumnIndex !== null && this.currentCardIndex !== null) {
-                this.currentEditingCard.updatedAt = new Date().toLocaleString(); // Обновляем время изменения
+                this.currentEditingCard.updatedAt = new Date().toLocaleString();
                 this.$set(this.columns[this.currentColumnIndex], this.currentCardIndex, { ...this.currentEditingCard });
                 this.closeModal();
             }
@@ -93,6 +103,37 @@ new Vue({
             this.currentEditingCard = null;
             this.currentColumnIndex = null;
             this.currentCardIndex = null;
+        },
+
+        onDragStart(colIndex, cardIndex, event) {
+            this.draggedCard = this.columns[colIndex][cardIndex];
+            this.draggedColumnIndex = colIndex;
+            event.dataTransfer.effectAllowed = "move";
+            event.target.classList.add("dragging");
+            console.log(`Начали перетаскивание: Столбец ${colIndex}, Карточка ${cardIndex}`);
+        },
+
+        onDragOver(event, colIndex) {
+            event.preventDefault();
+            console.log("DragOver сработал на колонке:", colIndex);
+        },
+
+        onDrop(colIndex, event) {
+            event.preventDefault();
+            console.log("Drop сработал на колонке:", colIndex);
+            console.log("Перетаскиваемая карточка:", this.draggedCard);
+            console.log("Перемещение из столбца:", this.draggedColumnIndex, "в", colIndex);
+
+            if (this.draggedCard && this.draggedColumnIndex !== null) {
+                const cardIndexInDraggedColumn = this.columns[this.draggedColumnIndex].indexOf(this.draggedCard);
+                if (cardIndexInDraggedColumn > -1) {
+                    this.columns[this.draggedColumnIndex].splice(cardIndexInDraggedColumn, 1);
+                }
+                this.columns[colIndex].push(this.draggedCard);
+            }
+
+            this.draggedCard = null;
+            this.draggedColumnIndex = null;
         },
 
         clearStorage() {
