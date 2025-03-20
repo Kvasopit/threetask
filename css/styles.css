@@ -361,3 +361,20 @@ h2 {
     color: #28a745; /* Зелёный цвет для выполненных в срок */
     font-weight: bold;
 }
+/* Стили для кнопки "Редактировать карточку" */
+.edit-card-btn {
+    width: 100%; /* Ширина кнопки на всю ширину карточки */
+    padding: 10px; /* Внутренние отступы */
+    background-color: #28a745; /* Зелёный цвет */
+    color: white; /* Белый текст */
+    border: none; /* Убираем границу */
+    border-radius: 5px; /* Скруглённые углы */
+    font-size: 1em; /* Размер текста */
+    cursor: pointer; /* Курсор в виде указателя */
+    margin-top: 10px; /* Отступ сверху */
+    transition: background-color 0.3s ease; /* Плавное изменение цвета */
+}
+
+.edit-card-btn:hover {
+    background-color: #218838; /* Тёмно-зелёный цвет при наведении */
+}

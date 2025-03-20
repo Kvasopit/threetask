@@ -22,7 +22,6 @@ new Vue({
                 v-for="(card, index) in column"
                 :key="index"
                 class="card"
-                @dblclick="openModal(card, colIndex, index)"
                 @dragstart="onDragStart(colIndex, index, $event)"
                 :draggable="colIndex === 0 || colIndex === 1 || colIndex === 2"
             >
@@ -33,12 +32,21 @@ new Vue({
               <p><strong>Последнее изменение:</strong> {{ card.updatedAt || 'Не изменялось' }}</p>
               <!-- Отображаем причину возврата, если она есть -->
               <p v-if="card.returnReason"><strong>Причина возврата:</strong> {{ card.returnReason }}</p>
+              <!-- Отображаем статус выполнения, если карточка в четвёртом столбце -->
               <p v-if="colIndex === 3 && card.status">
                 <strong>Статус:</strong>
                 <span :class="{'status-overdue': card.status === 'overdue', 'status-completed': card.status === 'completedOnTime'}">
             {{ card.status === "overdue" ? "Просрочено" : "Выполнено в срок" }}
         </span>
               </p>
+              <!-- Кнопка "Редактировать карточку" отображается только в первых трёх столбцах -->
+              <button
+                  v-if="colIndex !== 3"
+                  @click="openModal(card, colIndex, index)"
+                  class="edit-card-btn"
+              >
+                Редактировать карточку
+              </button>
             </div>
           </div>
         </div>
@@ -111,6 +119,9 @@ new Vue({
         },
 
         openModal(card, columnIndex, cardIndex) {
+            if (columnIndex === 3) {
+                return; // Запрещаем редактирование в четвёртом столбце
+            }
             this.currentEditingCard = { ...card };
             this.currentColumnIndex = columnIndex;
             this.currentCardIndex = cardIndex;
@@ -175,11 +186,6 @@ new Vue({
             this.columns[colIndex].push(this.draggedCard);
             this.draggedCard = null;
             this.draggedColumnIndex = null;
-        },
-
-        moveToCompleted() {
-            this.moveCard(3);
-            this.closeActionModal();
         },
 
         showReturnReasonInput() {
