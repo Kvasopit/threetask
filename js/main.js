@@ -24,13 +24,15 @@ new Vue({
                 class="card"
                 @dblclick="openModal(card, colIndex, index)"
                 @dragstart="onDragStart(colIndex, index, $event)"
-                :draggable="colIndex === 0 || colIndex === 1"
+                :draggable="colIndex === 0 || colIndex === 1 || colIndex === 2"
             >
               <h3>{{ card.title || 'Без названия' }}</h3>
               <p>{{ card.description || 'Нет описания' }}</p>
               <p><strong>Дедлайн:</strong> {{ card.deadline || 'Не установлен' }}</p>
               <p><strong>Создано:</strong> {{ card.createdAt }}</p>
               <p><strong>Последнее изменение:</strong> {{ card.updatedAt || 'Не изменялось' }}</p>
+              <!-- Отображаем причину возврата, если она есть -->
+              <p v-if="card.returnReason"><strong>Причина возврата:</strong> {{ card.returnReason }}</p>
             </div>
           </div>
         </div>
@@ -51,17 +53,42 @@ new Vue({
             </div>
           </div>
         </div>
+
+        <div v-if="isActionModalOpen" class="action-modal-overlay">
+          <div class="action-modal-content">
+            <h2>Выберите действие</h2>
+            <div class="action-modal-buttons">
+              <button @click="moveToCompleted" class="btn btn-move">Переместить в "Выполненные задачи"</button>
+              <button @click="showReturnReasonInput" class="btn btn-return">Вернуть в "В работу"</button>
+              <button @click="closeActionModal" class="btn btn-close">Закрыть</button>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="isReturnReasonModalOpen" class="modal-overlay">
+          <div class="modal-content">
+            <h2>Укажите причину возврата</h2>
+            <textarea v-model="returnReason" placeholder="Введите причину возврата" class="modal-input"></textarea>
+            <div class="modal-buttons">
+              <button @click="moveBackToInProgress" class="btn btn-save">Подтвердить</button>
+              <button @click="closeReturnReasonModal" class="btn btn-close">Отмена</button>
+            </div>
+          </div>
+        </div>
       </div>
     `,
     data: {
         columns: [[], [], [], []],
         columnTitles: ["Запланированные задачи", "В работе", "Тестирование", "Выполненные задачи"],
         isModalOpen: false,
+        isActionModalOpen: false,
+        isReturnReasonModalOpen: false,
         currentEditingCard: null,
         currentColumnIndex: null,
         currentCardIndex: null,
         draggedCard: null,
         draggedColumnIndex: null,
+        returnReason: "", // Причина возврата
     },
     methods: {
         addCard() {
@@ -71,6 +98,7 @@ new Vue({
                 deadline: null,
                 createdAt: new Date().toLocaleString(),
                 updatedAt: null,
+                returnReason: "", // Добавляем поле для причины возврата
             };
             this.columns[0].push(newCard);
             this.openModal(newCard, 0, this.columns[0].length - 1);
@@ -125,15 +153,49 @@ new Vue({
             console.log("Перемещение из столбца:", this.draggedColumnIndex, "в", colIndex);
 
             if (this.draggedCard && this.draggedColumnIndex !== null) {
-                const cardIndexInDraggedColumn = this.columns[this.draggedColumnIndex].indexOf(this.draggedCard);
-                if (cardIndexInDraggedColumn > -1) {
-                    this.columns[this.draggedColumnIndex].splice(cardIndexInDraggedColumn, 1);
+                if (this.draggedColumnIndex === 2 && colIndex === 3) {
+                    this.isActionModalOpen = true;
+                } else {
+                    this.moveCard(colIndex);
                 }
-                this.columns[colIndex].push(this.draggedCard);
             }
+        },
 
+        moveCard(colIndex) {
+            const cardIndexInDraggedColumn = this.columns[this.draggedColumnIndex].indexOf(this.draggedCard);
+            if (cardIndexInDraggedColumn > -1) {
+                this.columns[this.draggedColumnIndex].splice(cardIndexInDraggedColumn, 1);
+            }
+            this.columns[colIndex].push(this.draggedCard);
             this.draggedCard = null;
             this.draggedColumnIndex = null;
+        },
+
+        moveToCompleted() {
+            this.moveCard(3);
+            this.closeActionModal();
+        },
+
+        showReturnReasonInput() {
+            this.isActionModalOpen = false;
+            this.isReturnReasonModalOpen = true;
+        },
+
+        moveBackToInProgress() {
+            if (this.returnReason) {
+                this.draggedCard.returnReason = this.returnReason; // Сохраняем причину возврата
+                this.moveCard(1);
+                this.returnReason = ""; // Очищаем поле причины
+                this.closeReturnReasonModal();
+            }
+        },
+
+        closeActionModal() {
+            this.isActionModalOpen = false;
+        },
+
+        closeReturnReasonModal() {
+            this.isReturnReasonModalOpen = false;
         },
 
         clearStorage() {

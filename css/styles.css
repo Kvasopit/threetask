@@ -199,3 +199,155 @@ h2 {
     opacity: 0.5; /* Уменьшаем прозрачность, чтобы показать, что элемент в процессе перетаскивания */
     border: 2px dashed #007bff;
 }
+
+/* Оверлей фона модалки */
+.return-reason-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+/* Содержимое модального окна */
+.return-reason-modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.return-reason-modal-content h2 {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.return-reason-modal-input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    resize: vertical; /* Разрешаем изменение высоты текстового поля */
+}
+
+.return-reason-modal-input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.return-reason-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; /* Отступ между кнопками */
+}
+
+.return-reason-modal-buttons .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.return-reason-modal-buttons .btn:hover {
+    opacity: 0.9;
+}
+
+/* Кнопка "Подтвердить" */
+.return-reason-modal-buttons .btn-confirm {
+    background-color: #28a745;
+    color: white;
+}
+
+/* Кнопка "Отмена" */
+.return-reason-modal-buttons .btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+/* Стили для модального окна с действиями */
+.action-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.action-modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрируем содержимое */
+}
+
+.action-modal-content h2 {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.action-modal-buttons {
+    display: flex;
+    flex-direction: column; /* Кнопки в столбик */
+    gap: 10px; /* Отступ между кнопками */
+    width: 100%; /* Ширина контейнера */
+}
+
+.action-modal-buttons .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Ширина кнопок */
+    text-align: center; /* Текст по центру */
+}
+
+.action-modal-buttons .btn:hover {
+    opacity: 0.9;
+}
+
+/* Кнопка "Переместить в 'Выполненные задачи'" */
+.action-modal-buttons .btn-move {
+    background-color: #28a745;
+    color: white;
+}
+
+/* Кнопка "Вернуть в 'В работу'" */
+.action-modal-buttons .btn-return {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Кнопка "Закрыть" */
+.action-modal-buttons .btn-close {
+    background-color: #6c757d;
+    color: white;
+}
