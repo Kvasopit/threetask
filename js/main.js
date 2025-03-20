@@ -33,6 +33,12 @@ new Vue({
               <p><strong>Последнее изменение:</strong> {{ card.updatedAt || 'Не изменялось' }}</p>
               <!-- Отображаем причину возврата, если она есть -->
               <p v-if="card.returnReason"><strong>Причина возврата:</strong> {{ card.returnReason }}</p>
+              <p v-if="colIndex === 3 && card.status">
+                <strong>Статус:</strong>
+                <span :class="{'status-overdue': card.status === 'overdue', 'status-completed': card.status === 'completedOnTime'}">
+            {{ card.status === "overdue" ? "Просрочено" : "Выполнено в срок" }}
+        </span>
+              </p>
             </div>
           </div>
         </div>
@@ -187,6 +193,25 @@ new Vue({
                 this.moveCard(1);
                 this.returnReason = ""; // Очищаем поле причины
                 this.closeReturnReasonModal();
+            }
+        },
+        moveToCompleted() {
+            if (this.draggedCard) {
+                // Проверяем срок дедлайна
+                const currentDate = new Date();
+                const deadlineDate = new Date(this.draggedCard.deadline);
+
+                if (deadlineDate < currentDate) {
+                    // Если дедлайн просрочен
+                    this.draggedCard.status = "overdue"; // Просрочено
+                } else {
+                    // Если дедлайн не просрочен
+                    this.draggedCard.status = "completedOnTime"; // Выполнено в срок
+                }
+
+                // Перемещаем карточку в столбец "Выполненные задачи"
+                this.moveCard(3);
+                this.closeActionModal();
             }
         },
 

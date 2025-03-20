@@ -351,3 +351,13 @@ h2 {
     background-color: #6c757d;
     color: white;
 }
+/* Стили для статусов выполнения */
+.status-overdue {
+    color: #dc3545; /* Красный цвет для просроченных */
+    font-weight: bold;
+}
+
+.status-completed {
+    color: #28a745; /* Зелёный цвет для выполненных в срок */
+    font-weight: bold;
+}
