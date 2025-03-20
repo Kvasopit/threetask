@@ -85,13 +85,7 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
-    margin-left: 35px;
-}
-
-.add-card-btn[disabled],
-.add-task-btn[disabled] {
-    background-color: #ccc;
-    cursor: not-allowed;
+    margin-left: 42px;
 }
 
 .completed-date {
