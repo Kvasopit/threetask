@@ -51,7 +51,7 @@ new Vue({
           </div>
         </div>
 
-        <div v-if="isModalOpen" class="modal-overlay">
+        <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
           <div class="modal-content">
             <h2>Редактировать карточку</h2>
             <label>Заголовок:</label>
@@ -68,7 +68,7 @@ new Vue({
           </div>
         </div>
 
-        <div v-if="isActionModalOpen" class="action-modal-overlay">
+        <div v-if="isActionModalOpen" class="action-modal-overlay" @click.self="closeModal">
           <div class="action-modal-content">
             <h2>Выберите действие</h2>
             <div class="action-modal-buttons">
@@ -79,7 +79,7 @@ new Vue({
           </div>
         </div>
 
-        <div v-if="isReturnReasonModalOpen" class="modal-overlay">
+        <div v-if="isReturnReasonModalOpen" class="modal-overlay" @click.self="closeModal">
           <div class="modal-content">
             <h2>Укажите причину возврата</h2>
             <textarea v-model="returnReason" placeholder="Введите причину возврата" class="modal-input"></textarea>
@@ -233,14 +233,36 @@ new Vue({
             localStorage.clear();
             this.columns = [[], [], [], []];
             console.log("LocalStorage очищен");
-        }
+        },
+
+        handleKeydown(event) {
+            if (event.key === "Escape") {
+                if (this.isModalOpen) {
+                    this.closeModal();
+                } else if (this.isActionModalOpen) {
+                    this.closeActionModal();
+                } else if (this.isReturnReasonModalOpen) {
+                    this.closeReturnReasonModal();
+                }
+            }
+        },
     },
+
     mounted() {
+        // Добавляем обработчик события keydown при монтировании компонента
+        document.addEventListener("keydown", this.handleKeydown);
+
         const savedData = localStorage.getItem("notes");
         if (savedData) {
             this.columns = JSON.parse(savedData);
         }
     },
+
+    beforeDestroy() {
+        // Удаляем обработчик события keydown при уничтожении компонента
+        document.removeEventListener("keydown", this.handleKeydown);
+    },
+
     watch: {
         columns: {
             deep: true,
