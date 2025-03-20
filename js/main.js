@@ -23,16 +23,19 @@ new Vue({
         </div>
 
         <!-- Модальное окно редактирования карточки -->
-        <div v-if="isModalOpen" class="modal">
+        <div v-if="isModalOpen" class="modal-overlay">
           <div class="modal-content">
             <h2>Редактировать карточку</h2>
-            <label>Заголовок: <input v-model="currentEditingCard.title" type="text"></label>
-            <label>Описание: <textarea v-model="currentEditingCard.description"></textarea></label>
-            <label>Дедлайн: <input v-model="currentEditingCard.deadline" type="date"></label>
+            <label>Заголовок:</label>
+            <input v-model="currentEditingCard.title" type="text" class="modal-input">
+            <label>Описание:</label>
+            <textarea v-model="currentEditingCard.description" class="modal-input"></textarea>
+            <label>Дедлайн:</label>
+            <input v-model="currentEditingCard.deadline" type="date" class="modal-input">
             <div class="modal-buttons">
-              <button @click="saveCard">Сохранить</button>
-              <button @click="deleteCard">Удалить</button>
-              <button @click="closeModal">Закрыть</button>
+              <button @click="saveCard" class="btn btn-save">Сохранить</button>
+              <button @click="deleteCard" class="btn btn-delete">Удалить</button>
+              <button @click="closeModal" class="btn btn-close">Закрыть</button>
             </div>
           </div>
         </div>
