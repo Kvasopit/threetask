@@ -155,25 +155,27 @@ new Vue({
             this.draggedColumnIndex = colIndex;
             event.dataTransfer.effectAllowed = "move";
             event.target.classList.add("dragging");
-            console.log(`Начали перетаскивание: Столбец ${colIndex}, Карточка ${cardIndex}`);
         },
 
         onDragOver(event, colIndex) {
             event.preventDefault();
-            console.log("DragOver сработал на колонке:", colIndex);
         },
 
         onDrop(colIndex, event) {
             event.preventDefault();
-            console.log("Drop сработал на колонке:", colIndex);
-            console.log("Перетаскиваемая карточка:", this.draggedCard);
-            console.log("Перемещение из столбца:", this.draggedColumnIndex, "в", colIndex);
 
             if (this.draggedCard && this.draggedColumnIndex !== null) {
-                if (this.draggedColumnIndex === 2 && colIndex === 3) {
-                    this.isActionModalOpen = true;
-                } else {
-                    this.moveCard(colIndex);
+                // Проверяем, можно ли переместить карточку в целевой столбец
+                if (
+                    (this.draggedColumnIndex === 0 && colIndex === 1) || // Из 1 в 2
+                    (this.draggedColumnIndex === 1 && (colIndex === 0 || colIndex === 2)) || // Из 2 в 1 или 3
+                    (this.draggedColumnIndex === 2 && (colIndex === 1 || colIndex === 3)) // Из 3 в 2 или 4
+                ) {
+                    if (this.draggedColumnIndex === 2 && colIndex === 3) {
+                        this.isActionModalOpen = true;
+                    } else {
+                        this.moveCard(colIndex);
+                    }
                 }
             }
         },
@@ -232,7 +234,6 @@ new Vue({
         clearStorage() {
             localStorage.clear();
             this.columns = [[], [], [], []];
-            console.log("LocalStorage очищен");
         },
 
         handleKeydown(event) {
