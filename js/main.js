@@ -2,15 +2,12 @@ new Vue({
     el: "#app",
     template: `
       <div>
-        <button @click="addCard" :disabled="isColumn1Blocked" class="add-card-clear-btn">
+        <button @click="addCard" class="add-card-clear-btn">
           Добавить карточку
         </button>
         <button @click="clearStorage" class="add-card-clear-btn">
           Очистить Доску
         </button>
-        <p v-if="isColumn1Blocked" class="warning">
-          Первый столбец заблокирован для редактирования
-        </p>
 
         <div class="columns">
           <div class="column" v-for="(column, colIndex) in columns" :key="colIndex">
@@ -50,9 +47,7 @@ new Vue({
         currentCardIndex: null
     },
     computed: {
-        isColumn1Blocked() {
-            return this.columns[0].length >= 3; // Блокировка после 3 карточек
-        }
+
     },
     methods: {
         addCard() {
@@ -63,13 +58,9 @@ new Vue({
                 createdAt: new Date().toLocaleString(),
                 updatedAt: null, // Поле последнего изменения
             };
+            this.columns[0].push(newCard);
+            this.openModal(newCard, 0, this.columns[0].length - 1);
 
-            if (!this.isColumn1Blocked) {
-                this.columns[0].push(newCard);
-                this.openModal(newCard, 0, this.columns[0].length - 1);
-            } else {
-                console.warn("Максимум 3 карточки!");
-            }
         },
 
         openModal(card, columnIndex, cardIndex) {
