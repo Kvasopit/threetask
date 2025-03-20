@@ -1,0 +1,108 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.columns {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px;
+    flex-wrap: wrap;
+}
+
+.column {
+    width: 30%;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+.card {
+    background: #fafafa;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card-title h3 {
+    margin: 0;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.card-title input {
+    font-size: 1.2em;
+    width: 100%;
+    padding: 5px;
+}
+
+.task-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+.task-list li {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.task-list input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.task-list span {
+    cursor: pointer;
+}
+
+.task-list input[type="text"] {
+    flex: 1;
+    padding: 3px;
+}
+
+.add-card-clear-btn,
+.add-task-btn {
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-left: 35px;
+}
+
+.add-card-btn[disabled],
+.add-task-btn[disabled] {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.warning {
+    color: #d32f2f;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.completed-date {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+}
