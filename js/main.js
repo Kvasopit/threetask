@@ -16,7 +16,7 @@ new Vue({
       <div class="columns">
         <!-- 1-й столбец -->
         <div class="column">
-          <h2>Новые</h2>
+          <h2>Запланированные задачи</h2>
           <div v-for="(card, index) in columns[0]" :key="index" class="card">
             <div class="card-title">
               <template v-if="!card.isEditingTitle">
@@ -47,7 +47,7 @@ new Vue({
 
         <!-- 2-й столбец -->
         <div class="column">
-          <h2>В процессе</h2>
+          <h2>Задачи в работе</h2>
           <div v-for="(card, index) in columns[1]" :key="index" class="card">
             <div class="card-title">
               <template v-if="!card.isEditingTitle">
@@ -75,7 +75,7 @@ new Vue({
 
         <!-- 3-й столбец -->
         <div class="column">
-          <h2>Готово</h2>
+          <h2>Тестирование</h2>
           <div v-for="(card, index) in columns[2]" :key="index" class="card">
             <div class="card-title">
               <!-- В третьем столбце редактирование отключено -->
@@ -89,14 +89,35 @@ new Vue({
             </ul>
           </div>
         </div>
+
+        <div class="column">
+          <h2>Выполненные задачи</h2>
+          <div v-for="(card, index) in columns[3]" :key="index" class="card">
+            <div class="card-title">
+              <!-- В третьем столбце редактирование отключено -->
+              <h3>{{ card.title }}</h3>
+            </div>
+            <p class="completed-date">Завершено: {{ card.completedAt }}</p>
+            <ul class="task-list">
+              <li v-for="(task, tIndex) in card.tasks" :key="tIndex">
+                {{ task.text }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        
       </div>
     </div>
+    
+            
+    
   `,
     data: {
         columns: [
             [], // 1-й столбец (Новые)
             [], // 2-й столбец (В процессе)
-            []  // 3-й столбец (Готово)
+            [],
+            []
         ]
     },
     computed: {
