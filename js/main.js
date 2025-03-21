@@ -171,9 +171,14 @@ new Vue({
                     (this.draggedColumnIndex === 1 && (colIndex === 0 || colIndex === 2)) || // Из 2 в 1 или 3
                     (this.draggedColumnIndex === 2 && (colIndex === 1 || colIndex === 3)) // Из 3 в 2 или 4
                 ) {
-                    if (this.draggedColumnIndex === 2 && colIndex === 3) {
-                        this.isActionModalOpen = true;
+                    if (this.draggedColumnIndex === 2 && colIndex === 1) {
+                        // Если перемещение из 3 в 2 столбец, показываем модальное окно для указания причины возврата
+                        this.isReturnReasonModalOpen = true;
+                    } else if (this.draggedColumnIndex === 2 && colIndex === 3) {
+                        // Если перемещение из 3 в 4 столбец, перемещаем карточку без модального окна
+                        this.moveCard(colIndex);
                     } else {
+                        // В остальных случаях просто перемещаем карточку
                         this.moveCard(colIndex);
                     }
                 }
