@@ -30,16 +30,13 @@ new Vue({
               <p><strong>Дедлайн:</strong> {{ card.deadline || 'Не установлен' }}</p>
               <p><strong>Создано:</strong> {{ card.createdAt }}</p>
               <p><strong>Последнее изменение:</strong> {{ card.updatedAt || 'Не изменялось' }}</p>
-              <!-- Отображаем причину возврата, если она есть -->
               <p v-if="card.returnReason"><strong>Причина возврата:</strong> {{ card.returnReason }}</p>
-              <!-- Отображаем статус выполнения, если карточка в четвёртом столбце -->
               <p v-if="colIndex === 3 && card.status">
                 <strong>Статус:</strong>
                 <span :class="{'status-overdue': card.status === 'overdue', 'status-completed': card.status === 'completedOnTime'}">
             {{ card.status === "overdue" ? "Просрочено" : "Выполнено в срок" }}
         </span>
               </p>
-              <!-- Кнопка "Редактировать карточку" отображается только в первых трёх столбцах -->
               <button
                   v-if="colIndex !== 3"
                   @click="openModal(card, colIndex, index)"
@@ -102,7 +99,7 @@ new Vue({
         currentCardIndex: null,
         draggedCard: null,
         draggedColumnIndex: null,
-        returnReason: "", // Причина возврата
+        returnReason: "",
     },
     methods: {
         addCard() {
@@ -110,28 +107,27 @@ new Vue({
                 title: "",
                 description: "",
                 deadline: null,
-                createdAt: new Date().toLocaleString(),
+                createdAt: null, // Пока не устанавливаем дату создания
                 updatedAt: null,
-                returnReason: "", // Добавляем поле для причины возврата
+                returnReason: "",
             };
-            this.columns[0].push(newCard);
-            this.openModal(newCard, 0, this.columns[0].length - 1);
-        },
-
-        openModal(card, columnIndex, cardIndex) {
-            if (columnIndex === 3) {
-                return; // Запрещаем редактирование в четвёртом столбце
-            }
-            this.currentEditingCard = { ...card };
-            this.currentColumnIndex = columnIndex;
-            this.currentCardIndex = cardIndex;
+            this.currentEditingCard = newCard;
             this.isModalOpen = true;
         },
 
         saveCard() {
-            if (this.currentEditingCard && this.currentColumnIndex !== null && this.currentCardIndex !== null) {
+            if (this.currentEditingCard) {
+                if (!this.currentEditingCard.createdAt) {
+                    this.currentEditingCard.createdAt = new Date().toLocaleString();
+                }
                 this.currentEditingCard.updatedAt = new Date().toLocaleString();
-                this.$set(this.columns[this.currentColumnIndex], this.currentCardIndex, { ...this.currentEditingCard });
+
+                if (this.currentColumnIndex === null && this.currentCardIndex === null) {
+                    this.columns[0].push({ ...this.currentEditingCard });
+                } else if (this.currentColumnIndex !== null && this.currentCardIndex !== null) {
+                    this.$set(this.columns[this.currentColumnIndex], this.currentCardIndex, { ...this.currentEditingCard });
+                }
+
                 this.closeModal();
             }
         },
@@ -175,13 +171,32 @@ new Vue({
                         // Если перемещение из 3 в 2 столбец, показываем модальное окно для указания причины возврата
                         this.isReturnReasonModalOpen = true;
                     } else if (this.draggedColumnIndex === 2 && colIndex === 3) {
-                        // Если перемещение из 3 в 4 столбец, перемещаем карточку без модального окна
+                        // Если перемещение из 3 в 4 столбец, проверяем дедлайн и устанавливаем статус
+                        this.checkDeadlineAndSetStatus(this.draggedCard);
                         this.moveCard(colIndex);
                     } else {
                         // В остальных случаях просто перемещаем карточку
                         this.moveCard(colIndex);
                     }
                 }
+            }
+        },
+
+        checkDeadlineAndSetStatus(card) {
+            if (card.deadline) {
+                const currentDate = new Date();
+                const deadlineDate = new Date(card.deadline);
+
+                if (deadlineDate < currentDate) {
+                    // Если дедлайн просрочен
+                    card.status = "overdue"; // Просрочено
+                } else {
+                    // Если дедлайн не просрочен
+                    card.status = "completedOnTime"; // Выполнено в срок
+                }
+            } else {
+                // Если дедлайн не установлен
+                card.status = null; // Сбрасываем статус
             }
         },
 
@@ -202,26 +217,17 @@ new Vue({
 
         moveBackToInProgress() {
             if (this.returnReason) {
-                this.draggedCard.returnReason = this.returnReason; // Сохраняем причину возврата
+                this.draggedCard.returnReason = this.returnReason;
                 this.moveCard(1);
-                this.returnReason = ""; // Очищаем поле причины
+                this.returnReason = "";
                 this.closeReturnReasonModal();
             }
         },
+
         moveToCompleted() {
             if (this.draggedCard) {
-                // Проверяем срок дедлайна
-                const currentDate = new Date();
-                const deadlineDate = new Date(this.draggedCard.deadline);
-
-                if (deadlineDate < currentDate) {
-                    // Если дедлайн просрочен
-                    this.draggedCard.status = "overdue"; // Просрочено
-                } else {
-                    // Если дедлайн не просрочен
-                    this.draggedCard.status = "completedOnTime"; // Выполнено в срок
-                }
-
+                // Проверяем дедлайн и устанавливаем статус
+                this.checkDeadlineAndSetStatus(this.draggedCard);
                 // Перемещаем карточку в столбец "Выполненные задачи"
                 this.moveCard(3);
                 this.closeActionModal();
@@ -255,7 +261,6 @@ new Vue({
     },
 
     mounted() {
-        // Добавляем обработчик события keydown при монтировании компонента
         document.addEventListener("keydown", this.handleKeydown);
 
         const savedData = localStorage.getItem("notes");
@@ -265,7 +270,6 @@ new Vue({
     },
 
     beforeDestroy() {
-        // Удаляем обработчик события keydown при уничтожении компонента
         document.removeEventListener("keydown", this.handleKeydown);
     },
 
