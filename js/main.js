@@ -48,7 +48,7 @@ new Vue({
           </div>
         </div>
 
-        <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
+        <div v-if="isModalOpen" class="modal-overlay">
           <div class="modal-content">
             <h2>Редактировать карточку</h2>
             <label>Заголовок:</label>
@@ -65,7 +65,7 @@ new Vue({
           </div>
         </div>
 
-        <div v-if="isActionModalOpen" class="action-modal-overlay" @click.self="closeModal">
+        <div v-if="isActionModalOpen" class="action-modal-overlay">
           <div class="action-modal-content">
             <h2>Выберите действие</h2>
             <div class="action-modal-buttons">
@@ -76,7 +76,7 @@ new Vue({
           </div>
         </div>
 
-        <div v-if="isReturnReasonModalOpen" class="modal-overlay" @click.self="closeModal">
+        <div v-if="isReturnReasonModalOpen" class="modal-overlay">
           <div class="modal-content">
             <h2>Укажите причину возврата</h2>
             <textarea v-model="returnReason" placeholder="Введите причину возврата" class="modal-input"></textarea>
