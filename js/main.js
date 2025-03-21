@@ -50,7 +50,7 @@ new Vue({
 
         <div v-if="isModalOpen" class="modal-overlay">
           <div class="modal-content">
-            <h2>Редактировать карточку</h2>
+            <h2>{{ isEditing ? 'Редактировать карточку' : 'Создать карточку' }}</h2>
             <label>Заголовок:</label>
             <input v-model="currentEditingCard.title" type="text" class="modal-input">
             <label>Описание:</label>
@@ -59,7 +59,7 @@ new Vue({
             <input v-model="currentEditingCard.deadline" type="date" class="modal-input">
             <div class="modal-buttons">
               <button @click="saveCard" class="btn btn-save">Сохранить</button>
-              <button @click="deleteCard" class="btn btn-delete">Удалить</button>
+              <button v-if="isEditing" @click="deleteCard" class="btn btn-delete">Удалить</button>
               <button @click="closeModal" class="btn btn-close">Закрыть</button>
             </div>
           </div>
@@ -100,6 +100,7 @@ new Vue({
         draggedCard: null,
         draggedColumnIndex: null,
         returnReason: "",
+        isEditing: false, // Добавляем флаг для определения режима редактирования
     },
     methods: {
         addCard() {
@@ -112,6 +113,7 @@ new Vue({
                 returnReason: "",
             };
             this.currentEditingCard = newCard;
+            this.isEditing = false; // Устанавливаем флаг в false, так как это создание новой карточки
             this.isModalOpen = true;
         },
 
@@ -125,6 +127,7 @@ new Vue({
             this.currentEditingCard = { ...card };
             this.currentColumnIndex = colIndex;
             this.currentCardIndex = index;
+            this.isEditing = true; // Устанавливаем флаг в true, так как это редактирование существующей карточки
 
             // Открываем модальное окно
             this.isModalOpen = true;
@@ -159,6 +162,7 @@ new Vue({
             this.currentEditingCard = null;
             this.currentColumnIndex = null;
             this.currentCardIndex = null;
+            this.isEditing = false; // Сбрасываем флаг при закрытии модального окна
         },
 
         onDragStart(colIndex, cardIndex, event) {
