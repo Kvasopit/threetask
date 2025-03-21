@@ -115,6 +115,21 @@ new Vue({
             this.isModalOpen = true;
         },
 
+        openModal(card, colIndex, index) {
+            // Если карточка находится в 4-м столбце, редактирование запрещено
+            if (colIndex === 3) {
+                return;
+            }
+
+            // Устанавливаем текущую редактируемую карточку и её индексы
+            this.currentEditingCard = { ...card };
+            this.currentColumnIndex = colIndex;
+            this.currentCardIndex = index;
+
+            // Открываем модальное окно
+            this.isModalOpen = true;
+        },
+
         saveCard() {
             if (this.currentEditingCard) {
                 if (!this.currentEditingCard.createdAt) {
@@ -161,21 +176,17 @@ new Vue({
             event.preventDefault();
 
             if (this.draggedCard && this.draggedColumnIndex !== null) {
-                // Проверяем, можно ли переместить карточку в целевой столбец
                 if (
                     (this.draggedColumnIndex === 0 && colIndex === 1) || // Из 1 в 2
                     (this.draggedColumnIndex === 1 && (colIndex === 0 || colIndex === 2)) || // Из 2 в 1 или 3
                     (this.draggedColumnIndex === 2 && (colIndex === 1 || colIndex === 3)) // Из 3 в 2 или 4
                 ) {
                     if (this.draggedColumnIndex === 2 && colIndex === 1) {
-                        // Если перемещение из 3 в 2 столбец, показываем модальное окно для указания причины возврата
                         this.isReturnReasonModalOpen = true;
                     } else if (this.draggedColumnIndex === 2 && colIndex === 3) {
-                        // Если перемещение из 3 в 4 столбец, проверяем дедлайн и устанавливаем статус
                         this.checkDeadlineAndSetStatus(this.draggedCard);
                         this.moveCard(colIndex);
                     } else {
-                        // В остальных случаях просто перемещаем карточку
                         this.moveCard(colIndex);
                     }
                 }
@@ -188,14 +199,11 @@ new Vue({
                 const deadlineDate = new Date(card.deadline);
 
                 if (deadlineDate < currentDate) {
-                    // Если дедлайн просрочен
                     card.status = "overdue"; // Просрочено
                 } else {
-                    // Если дедлайн не просрочен
                     card.status = "completedOnTime"; // Выполнено в срок
                 }
             } else {
-                // Если дедлайн не установлен
                 card.status = null; // Сбрасываем статус
             }
         },
@@ -226,9 +234,7 @@ new Vue({
 
         moveToCompleted() {
             if (this.draggedCard) {
-                // Проверяем дедлайн и устанавливаем статус
                 this.checkDeadlineAndSetStatus(this.draggedCard);
-                // Перемещаем карточку в столбец "Выполненные задачи"
                 this.moveCard(3);
                 this.closeActionModal();
             }
